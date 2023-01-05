@@ -1,4 +1,66 @@
-<script setup></script>
+<script setup>
+import { computed, reactive } from "vue";
+
+const state = reactive({
+  password: "",
+  currency: {
+    name: "Euro",
+    symbol: "€",
+  },
+  vegetables: [
+    {
+      name: "Beans",
+      price: 1,
+      quantity: 0,
+    },
+    {
+      name: "Tomatoes",
+      price: 0.2,
+      quantity: 0,
+    },
+    {
+      name: "Potatoes",
+      price: 0.1,
+      quantity: 0,
+    },
+  ],
+});
+
+const displayAlert = () => {
+  alert(
+    `Votre mot de passe possède ${passwordLength.value} caractère${
+      passwordLength.value > 1 ? "s" : ""
+    }`
+  );
+  state.password = "";
+};
+
+const minusOne = (index) => {
+  let quantity = state.vegetables[index].quantity;
+  state.vegetables[index].quantity = quantity < 1 ? 0 : --quantity;
+};
+
+const passwordLength = computed(() => {
+  return state.password.length;
+});
+
+const isPasswordValid = computed(() => {
+  return passwordLength.value < 10
+    ? "Mot passe trop court"
+    : "Mot de passe valide";
+});
+
+const total = computed(() => {
+  let total = 0;
+  state.vegetables.forEach((v) => {
+    total += v.quantity * v.price;
+  });
+  return total;
+  /*return state.vegetables.reduce((reducer,v) => {
+            return reducer + v.quantity * v.price
+          },0)*/
+});
+</script>
 
 <template>
   <section id="exercise">
@@ -10,9 +72,15 @@
                 - réinitialiser l'input à la valeur de départ
     -->
     <div>
-      <input type="password" />
-      <p id="error"></p>
-      <button type="button">Afficher le nombre de caractères</button>
+      <input
+        v-model="state.password"
+        type="password"
+        @keydown.enter="displayAlert"
+      />
+      <p id="error">{{ isPasswordValid }}</p>
+      <button type="button" @click="displayAlert">
+        Afficher le nombre de caractères
+      </button>
     </div>
   </section>
 
@@ -20,43 +88,49 @@
     <!-- Créer un système permettant de sélectionner une commande et de l'afficher en temps réel -->
     <div>
       <div class="ingredient">
-        <h2>Salades</h2>
-        <p>Prix : 1&euro;</p>
+        <h2>{{ state.vegetables[0].name }}</h2>
+        <p>Prix : {{ state.vegetables[0].price }}{{ state.currency.symbol }}</p>
         <div class="action">
-          <button>-</button>
-          <input type="number" value="0" />
-          <button>+</button>
+          <button @click="minusOne(0)">-</button>
+          <input type="number" v-model="state.vegetables[0].quantity" />
+          <button @click="state.vegetables[0].quantity++">+</button>
         </div>
       </div>
       <div class="ingredient">
-        <h2>Tomates</h2>
-        <p>Prix : 0.2&euro;</p>
+        <h2>{{ state.vegetables[1].name }}</h2>
+        <p>Prix : {{ state.vegetables[1].price }}{{ state.currency.symbol }}</p>
         <div class="action">
-          <button>-</button>
-          <input type="number" value="0" />
-          <button>+</button>
+          <button @click="minusOne(1)">-</button>
+          <input type="number" v-model="state.vegetables[1].quantity" />
+          <button @click="state.vegetables[1].quantity++">+</button>
         </div>
       </div>
       <div class="ingredient">
-        <h2>Pommes de terre</h2>
-        <p>Prix : 0.1&euro;</p>
+        <h2>{{ state.vegetables[2].name }}</h2>
+        <p>Prix : {{ state.vegetables[2].price }}{{ state.currency.symbol }}</p>
         <div class="action">
-          <button>-</button>
-          <input type="number" value="0" />
-          <button>+</button>
+          <button @click="minusOne(2)">-</button>
+          <input type="number" v-model="state.vegetables[2].quantity" />
+          <button @click="state.vegetables[2].quantity++">+</button>
         </div>
       </div>
+
       <h1>Ma Commande</h1>
       <ul>
-        <li>Salades :</li>
-        <li>Tomates :</li>
-        <li>Pommes de terre :</li>
+        <li>
+          {{ state.vegetables[0].name }} : {{ state.vegetables[0].quantity }}
+        </li>
+        <li>
+          {{ state.vegetables[1].name }} : {{ state.vegetables[1].quantity }}
+        </li>
+        <li>
+          {{ state.vegetables[2].name }} : {{ state.vegetables[2].quantity }}
+        </li>
       </ul>
       <div></div>
-      <p>Total : X&euro;</p>
+      <p>Total : {{ total }} {{ state.currency.symbol }}</p>
     </div>
   </section>
-  <div></div>
 </template>
 
 <style scoped>

@@ -51,14 +51,14 @@ const isPasswordValid = computed(() => {
 });
 
 const total = computed(() => {
-  let total = 0;
-  state.vegetables.forEach((v) => {
-    total += v.quantity * v.price;
-  });
-  return total;
-  /*return state.vegetables.reduce((reducer,v) => {
-            return reducer + v.quantity * v.price
-          },0)*/
+  // let total = 0;
+  // state.vegetables.forEach((v) => {
+  //   total += v.quantity * v.price;
+  // });
+  // return total;
+  return state.vegetables.reduce((reducer, v) => {
+    return reducer + v.quantity * v.price;
+  }, 0);
 });
 </script>
 
@@ -87,44 +87,24 @@ const total = computed(() => {
   <section id="exercise2">
     <!-- Créer un système permettant de sélectionner une commande et de l'afficher en temps réel -->
     <div>
-      <div class="ingredient">
-        <h2>{{ state.vegetables[0].name }}</h2>
-        <p>Prix : {{ state.vegetables[0].price }}{{ state.currency.symbol }}</p>
+      <div
+        v-for="(vegetable, index) of state.vegetables"
+        class="ingredient"
+        :key="index"
+      >
+        <h2>{{ vegetable.name }}</h2>
+        <p>Prix : {{ vegetable.price }}{{ state.currency.symbol }}</p>
         <div class="action">
-          <button @click="minusOne(0)">-</button>
-          <input type="number" v-model="state.vegetables[0].quantity" />
-          <button @click="state.vegetables[0].quantity++">+</button>
-        </div>
-      </div>
-      <div class="ingredient">
-        <h2>{{ state.vegetables[1].name }}</h2>
-        <p>Prix : {{ state.vegetables[1].price }}{{ state.currency.symbol }}</p>
-        <div class="action">
-          <button @click="minusOne(1)">-</button>
-          <input type="number" v-model="state.vegetables[1].quantity" />
-          <button @click="state.vegetables[1].quantity++">+</button>
-        </div>
-      </div>
-      <div class="ingredient">
-        <h2>{{ state.vegetables[2].name }}</h2>
-        <p>Prix : {{ state.vegetables[2].price }}{{ state.currency.symbol }}</p>
-        <div class="action">
-          <button @click="minusOne(2)">-</button>
-          <input type="number" v-model="state.vegetables[2].quantity" />
-          <button @click="state.vegetables[2].quantity++">+</button>
+          <button @click="minusOne(index)">-</button>
+          <input type="number" v-model="vegetable.quantity" />
+          <button @click="vegetable.quantity++">+</button>
         </div>
       </div>
 
       <h1>Ma Commande</h1>
       <ul>
-        <li>
-          {{ state.vegetables[0].name }} : {{ state.vegetables[0].quantity }}
-        </li>
-        <li>
-          {{ state.vegetables[1].name }} : {{ state.vegetables[1].quantity }}
-        </li>
-        <li>
-          {{ state.vegetables[2].name }} : {{ state.vegetables[2].quantity }}
+        <li v-for="(vegetable, index) of state.vegetables" :key="index">
+          {{ vegetable.name }} : {{ vegetable.quantity }}
         </li>
       </ul>
       <div></div>
